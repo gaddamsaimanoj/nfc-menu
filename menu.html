@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Gun BBQ Menu</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #fefefe; }
+    h1 { text-align: center; }
+    .menu { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .item { border: 1px solid #ccc; padding: 16px; width: 250px; border-radius: 12px; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+    .item img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+    .item h3 { margin: 0 0 8px; }
+    .item button { background: #25D366; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+    .cart { margin-top: 30px; text-align: center; }
+    .cart-items { margin-bottom: 20px; }
+    .send-btn { background: #128C7E; color: white; padding: 10px 20px; font-size: 18px; border-radius: 8px; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>The Gun BBQ Menu</h1>
+  <div class="menu" id="menu"></div>
+
+  <div class="cart">
+    <h2>Cart</h2>
+    <div class="cart-items" id="cart-items"></div>
+    <button class="send-btn" onclick="sendToWhatsApp()">Send Order to WhatsApp</button>
+  </div>
+
+  <script>
+    const phone = "916281092813";
+
+    const menuItems = [
+      { id: 1, name: "Chicken Strips", price: 200, image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092" },
+      { id: 2, name: "Chicken Wings 8P", price: 200, image: "https://images.unsplash.com/photo-1599785209791-d6a6f8abf06e" },
+      { id: 3, name: "Chicken Drumsticks 2P", price: 200, image: "https://images.unsplash.com/photo-1628519593745-d2e36481f823" },
+      { id: 4, name: "Grilled Prawns", price: 230, image: "https://images.unsplash.com/photo-1600628422019-2e62a6d64352" },
+      { id: 5, name: "Chicken Tikka", price: 210, image: "https://images.unsplash.com/photo-1597393921453-1ffb0db6b63d" },
+      { id: 6, name: "BBQ Chicken Wrap", price: 170, image: "https://images.unsplash.com/photo-1601050690590-be3389d711db" },
+      { id: 7, name: "Chicken Nachos", price: 170, image: "https://images.unsplash.com/photo-1617137491713-b8962fd01451" },
+      { id: 8, name: "Coca Cola", price: 30, image: "https://images.unsplash.com/photo-1603297631954-502d0b2bfe9e" },
+    ];
+
+    const cart = {};
+
+    function renderMenu() {
+      const menu = document.getElementById("menu");
+      menuItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" />
+          <h3>${item.name}</h3>
+          <p>₹${item.price}</p>
+          <button onclick="addToCart(${item.id})">Add to Cart</button>
+        `;
+        menu.appendChild(div);
+      });
+    }
+
+    function addToCart(id) {
+      if (!cart[id]) {
+        cart[id] = { ...menuItems.find(item => item.id === id), qty: 1 };
+      } else {
+        cart[id].qty += 1;
+      }
+      renderCart();
+    }
+
+    function renderCart() {
+      const cartItems = document.getElementById("cart-items");
+      cartItems.innerHTML = "";
+      Object.values(cart).forEach(item => {
+        const div = document.createElement("div");
+        div.innerText = `${item.name} x ${item.qty} = ₹${item.price * item.qty}`;
+        cartItems.appendChild(div);
+      });
+    }
+
+    function sendToWhatsApp() {
+      if (Object.keys(cart).length === 0) {
+        alert("Cart is empty!");
+        return;
+      }
+      let message = "Hi! I would like to place an order:%0A";
+      Object.values(cart).forEach(item => {
+        message += `- ${item.name} x ${item.qty} = ₹${item.price * item.qty}%0A`;
+      });
+      const url = `https://wa.me/${phone}?text=${message}`;
+      window.open(url, '_blank');
+    }
+
+    renderMenu();
+  </script>
+</body>
+</html>
